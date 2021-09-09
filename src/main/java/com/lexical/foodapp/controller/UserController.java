@@ -1,8 +1,10 @@
 package com.lexical.foodapp.controller;
 
 import com.lexical.foodapp.model.UserModel;
+import com.lexical.foodapp.response.DataResponse;
 import com.lexical.foodapp.response.HandlerResponse;
 import com.lexical.foodapp.service.UserService;
+import com.lexical.foodapp.shared.dto.ProfileDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +20,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/users", produces = {"application/json"})
@@ -56,4 +59,40 @@ public class UserController {
         }
     }
 
+    @GetMapping(value = "/{userId}")
+    public void getProfile(HttpServletRequest request, HttpServletResponse response,
+                           @PathVariable("userId") int userId) throws IOException {
+
+        ProfileDto profileDto = userService.getProfile(userId);
+        if (profileDto != null) {
+            DataResponse<ProfileDto> dataUser = new DataResponse<>();
+            dataUser.setData(profileDto);
+            HandlerResponse.responseSuccessWithData(response, dataUser);
+        } else {
+            HandlerResponse.responseNotFound(response, "User not found");
+        }
+    }
+
+    @PostMapping(value = "/update", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    public void updateProfile(HttpServletRequest request, HttpServletResponse response,
+                              @Valid @NotNull @ModelAttribute("userid") int userId,
+                              @Valid @NotNull @ModelAttribute("fullname") String fullName,
+                              @Valid @NotNull @ModelAttribute("email") String email) throws IOException {
+
+        Optional<UserModel> userExists = userService.getUserById(userId);
+
+        if (userExists.isEmpty()) {
+            HandlerResponse.responseNotFound(response, "User not found");
+        } else {
+            ProfileDto profileDto = userService.updateProfile(userId, fullName, email);
+
+            if (profileDto != null) {
+                DataResponse<ProfileDto> data = new DataResponse<>();
+                data.setData(profileDto);
+                HandlerResponse.responseSuccessWithData(response, data);
+            } else {
+                HandlerResponse.responseNotFound(response, "User not found");
+            }
+        }
+    }
 }

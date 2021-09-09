@@ -37,6 +37,12 @@ public class HandlerResponse {
         responseWriter(response, errorResponse, errorResponse.getCode());
     }
 
+    public static void responseSuccessWithData(HttpServletResponse response, DataResponse<?> data){
+        data.setStatus(STATUS_SUCCESS);
+        data.setCode(HttpServletResponse.SC_OK);
+        responseWriter(response, data, data.getCode());
+    }
+
     public static void responseSuccessCreated(HttpServletResponse response, String message){
         if (message.isEmpty()){
             message = "CREATED";
@@ -58,7 +64,19 @@ public class HandlerResponse {
         ErrorResponse<String> errorResponse = new ErrorResponse<>();
         errorResponse.setCode(HttpServletResponse.SC_BAD_REQUEST);
         errorResponse.setStatus(STATUS_FAILED);
-        errorResponse.setErrorCode(errorCode);
+        errorResponse.setMessage(error);
+
+        responseWriter(response, errorResponse, errorResponse.getCode());
+    }
+
+    public static void responseNotFound(HttpServletResponse response, String error) {
+        if (error.isEmpty()) {
+            error = "NOT FOUND";
+        }
+
+        ErrorResponse<String> errorResponse = new ErrorResponse<>();
+        errorResponse.setCode(HttpServletResponse.SC_NOT_FOUND);
+        errorResponse.setStatus(STATUS_FAILED);
         errorResponse.setMessage(error);
 
         responseWriter(response, errorResponse, errorResponse.getCode());

@@ -1,9 +1,10 @@
 package com.lexical.foodapp.response;
 
-public class ErrorResponse<T> {
+public class DataResponse<T> {
+
     private int code;
     private String status;
-    private T message;
+    private T data;
 
     public int getCode() {
         return code;
@@ -21,11 +22,11 @@ public class ErrorResponse<T> {
         this.status = status;
     }
 
-    public T getMessage() {
-        return message;
+    public T getData() {
+        return data;
     }
 
-    public void setMessage(T message) {
-        this.message = message;
+    public void setData(T data) {
+        this.data = data;
     }
 }
