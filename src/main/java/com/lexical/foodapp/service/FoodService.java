@@ -1,7 +1,6 @@
 package com.lexical.foodapp.service;
 
 import com.lexical.foodapp.model.food.FoodModel;
-import com.lexical.foodapp.model.food.SearchFoodModel;
 import com.lexical.foodapp.repository.FoodRepository;
 import com.lexical.foodapp.shared.dto.FoodDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +49,15 @@ public class FoodService {
         return food;
     }
 
-    public Slice<SearchFoodModel> getFoodByPrice(String foodPrice) {
+    public List<FoodModel> getFoodByFilterPrice(int min, int max) {
+        List<FoodModel> foods = foodRepository.getFoodByFilterPrice(min, max);
 
-        return foodRepository.getFoodByPrice(foodPrice);
+        if (foods.size() > 0) {
+            return foods.stream().collect(Collectors.toList());
+        } else {
+            return foods;
+        }
     }
+
+
 }

@@ -1,13 +1,11 @@
 package com.lexical.foodapp.controller;
 
 import com.lexical.foodapp.model.food.FoodModel;
-import com.lexical.foodapp.model.food.SearchFoodModel;
 import com.lexical.foodapp.response.DataResponse;
 import com.lexical.foodapp.response.HandlerResponse;
 import com.lexical.foodapp.service.FoodService;
 import com.lexical.foodapp.shared.dto.FoodDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,15 +71,16 @@ public class FoodController {
 
     @GetMapping(value = "/price")
     public void foodByPrice(HttpServletRequest request, HttpServletResponse response,
-                            @RequestParam(value = "price") String foodPrice) throws IOException {
+                            @RequestParam(value = "min") int minPrice,
+                            @RequestParam(value = "max") int maxPrice) throws IOException {
 
-        Slice<SearchFoodModel> foods = foodService.getFoodByPrice(foodPrice);
-        DataResponse<Slice<SearchFoodModel>> dataResponse = new DataResponse<>();
-        if (foods.getContent().isEmpty()) {
-            HandlerResponse.responseNotFound(response, "Food Not fodun");
-        } else {
-            dataResponse.setData(foods);
-            HandlerResponse.responseSuccessWithData(response, dataResponse);
-        }
+        DataResponse<List<FoodModel>> foodResponse = new DataResponse<>();
+        List<FoodModel> foods = foodService.getFoodByFilterPrice(minPrice, maxPrice);
+        foodResponse.setData(foods);
+
+        HandlerResponse.responseSuccessWithData(response, foodResponse);
     }
+
+
+
 }
