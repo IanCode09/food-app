@@ -1,11 +1,13 @@
 package com.lexical.foodapp.controller;
 
-import com.lexical.foodapp.model.FoodModel;
+import com.lexical.foodapp.model.food.FoodModel;
+import com.lexical.foodapp.model.food.SearchFoodModel;
 import com.lexical.foodapp.response.DataResponse;
 import com.lexical.foodapp.response.HandlerResponse;
 import com.lexical.foodapp.service.FoodService;
 import com.lexical.foodapp.shared.dto.FoodDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +53,35 @@ public class FoodController {
             HandlerResponse.responseSuccessCreated(response, "Food created successfuly");
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @GetMapping("/{foodId}")
+    public void foodDetail(HttpServletRequest request, HttpServletResponse response,
+                           @PathVariable("foodId") int foodId) throws IOException {
+
+        FoodDto foodDto = foodService.getFoodDetail(foodId);
+
+        if(foodDto != null) {
+            DataResponse<FoodDto> dataResponse = new DataResponse<>();
+            dataResponse.setData(foodDto);
+            HandlerResponse.responseSuccessWithData(response, dataResponse);
+        } else {
+            HandlerResponse.responseNotFound(response, "Food not found");
+        }
+    }
+
+    @GetMapping(value = "/price")
+    public void foodByPrice(HttpServletRequest request, HttpServletResponse response,
+                            @RequestParam(value = "price") String foodPrice) throws IOException {
+
+        Slice<SearchFoodModel> foods = foodService.getFoodByPrice(foodPrice);
+        DataResponse<Slice<SearchFoodModel>> dataResponse = new DataResponse<>();
+        if (foods.getContent().isEmpty()) {
+            HandlerResponse.responseNotFound(response, "Food Not fodun");
+        } else {
+            dataResponse.setData(foods);
+            HandlerResponse.responseSuccessWithData(response, dataResponse);
         }
     }
 }

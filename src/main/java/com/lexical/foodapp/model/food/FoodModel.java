@@ -1,4 +1,4 @@
-package com.lexical.foodapp.model;
+package com.lexical.foodapp.model.food;
 
 import javax.persistence.*;
 
